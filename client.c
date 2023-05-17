@@ -5,37 +5,33 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abeaudui <abeaudui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/25 16:17:59 by mudoh             #+#    #+#             */
-/*   Updated: 2023/05/16 17:41:00 by abeaudui         ###   ########.fr       */
+/*   Created: 2023/05/17 16:04:35 by abeaudui          #+#    #+#             */
+/*   Updated: 2023/05/17 16:09:24 by abeaudui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// chaque char = 1 octets = 8 bits. chaque signal = 1 bit
-
 #include "minitalk.h"
 
-char	g_mess[5000000]; //stockage du message
+char	g_mess[5000000];
 
-
-void	handle_signal(int signal, siginfo_t *siginfo, void *context)//on traite le signal recu
+void	handle_signal(int signal, siginfo_t *siginfo, void *context)
 {
-	static int	nb_bit;//bits recus
-	static int	i; //index du message
+	static int	nb_bit;
+	static int	i;
 
 	(void)context;
-	if (signal == SIGUSR1)//un bit du message est transmis
+	if (signal == SIGUSR1)
 	{
-		if (g_mess[i] & 1 << nb_bit)//si le bit est a 1 dans le message
-			signal_error(kill(siginfo->si_pid, SIGUSR2)); //on envoie un signal SIGUSR2 pour indiquer que le bit a bien ete recu
+		if (g_mess[i] & 1 << nb_bit)
+			signal_error(kill(siginfo->si_pid, SIGUSR2));
 		else
-			signal_error(kill(siginfo->si_pid, SIGUSR1)); //sinon on envoie SIGUSR1 pour indiquer une erreur de reception
+			signal_error(kill(siginfo->si_pid, SIGUSR1));
 		nb_bit++;
-		if (nb_bit == 8)//8 bits dans un octet
+		if (nb_bit == 8)
 		{
-			i++; //on passe au caractere suivant
+			i++;
 			nb_bit = 0;
 		}
-		printf("%d/n", siginfo->si_pid);
 	}
 	else
 		exit(EXIT_SUCCESS);
@@ -43,24 +39,24 @@ void	handle_signal(int signal, siginfo_t *siginfo, void *context)//on traite le 
 
 int	main(int argc, char **argv)
 {
-	struct sigaction sa; //gestion des signaux
+	struct sigaction	sa;
 
 	if (argc == 3)
 	{
-		ft_checkpid(argv[1]); //on check si le PID est bon ou pas
-		sigemptyset(&sa.sa_mask);//on vide le mask pr etre sur qu il y a pas de signaux parasites
-		sa.sa_sigaction = handle_signal;// fonction a utiliser pour gerer le signal
-		sa.sa_flags = SA_SIGINFO;//on utiliser siginfo_t plutot que void pour recevoir + d'infos supplementaires sur le signal
+		ft_checkpid(argv[1]);
+		sigemptyset(&sa.sa_mask);
+		sa.sa_sigaction = handle_signal;
+		sa.sa_flags = SA_SIGINFO;
 		sigaction(SIGUSR1, &sa, NULL);
 		sigaction(SIGUSR2, &sa, NULL);
-		ft_strcpy(g_mess, argv[2]);//on met le message dans g_mess
-		signal_error(kill(ft_atoi(argv[1]), SIGUSR1)); //on envoie un signal SIGUSR1 pour indiquer qu'on peut commencer a transmettre le message
+		ft_strcpy(g_mess, argv[2]);
+		signal_error(kill(ft_atoi(argv[1]), SIGUSR1));
 		while (1)
 			pause();
 	}
 	else
 	{
-		ft_printf(ROUGE "Il faut 3 arguments !" NORMAL);
+		ft_printf("need 3 arg");
 		exit(EXIT_FAILURE);
 	}
 	return (0);

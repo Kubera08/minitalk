@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lusezett <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: abeaudui <abeaudui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/25 16:07:51 by mudoh             #+#    #+#             */
-/*   Updated: 2023/05/15 18:36:44 by lusezett         ###   ########.fr       */
+/*   Updated: 2023/05/17 15:11:18 by abeaudui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	signal_error(int check_kill)
 {
 	if (check_kill == -1)
 	{
-		ft_printf("\33[01;31mkill(): Echec, surement l'ancien PID\33[00m\n");
+		ft_printf("Echec");
 		exit(1);
 	}
 }
@@ -30,7 +30,7 @@ void	ft_checkpid(char *pid)
 	{
 		if (!(pid[i] >= '0' && pid[i] <= '9'))
 		{
-			ft_printf(ROUGE "Mauvais PID !" NORMAL);
+			ft_printf(ROUGE "bad PID" NORMAL);
 			exit(1);
 		}
 		i++;
@@ -55,7 +55,7 @@ int	ft_atoi(const char *pid)
 		return (number);
 	}
 	else
-		ft_printf(JAUNE "Ton pid est suspect\n" NORMAL);
+		ft_printf(JAUNE "wrong PID \n" NORMAL);
 	exit(1);
 }
 
